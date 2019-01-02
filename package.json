@@ -1,0 +1,27 @@
+{
+  "name": "amz-keywords",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "amazon-product-api": "^0.4.4",
+    "async-retry": "^1.2.3",
+    "json2csv": "^4.3.2",
+    "lodash.get": "^4.4.2",
+    "util": "^0.11.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/13thang08/amz-keywords.git"
+  },
+  "author": "thangvm91@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/13thang08/amz-keywords/issues"
+  },
+  "homepage": "https://github.com/13thang08/amz-keywords#readme"
+}
