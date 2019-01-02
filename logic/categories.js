@@ -67,13 +67,14 @@ async function appendCsvFile(results) {
   let fields = Object.keys(firstRow);
   const json2csvParser = new Json2csvParser({ fields, header: false });
   const csv = json2csvParser.parse(results);
+  await appendFile(config.outputCategoriesFile, `${endOfLine}`);
   await appendFile(config.outputCategoriesFile, csv);
 }
 
 async function main() {
   try {
     await unlink(config.outputCategoriesFile);
-    await appendFile(config.outputCategoriesFile, `"BrowseNodeId","Name"${endOfLine}`);
+    await appendFile(config.outputCategoriesFile, `"BrowseNodeId","Name"`);
   } catch(e) {
     // do nothing
   }
