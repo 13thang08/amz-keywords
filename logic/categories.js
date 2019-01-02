@@ -4,9 +4,12 @@ const promisify = require('util').promisify;
 const fs = require('fs');
 const sleep = promisify(setTimeout);
 const writeFile = promisify(fs.writeFile);
+const appendFile = promisify(fs.appendFile);
+const unlink = promisify(fs.unlink);
 const retry = require('async-retry');
 const config = require('../config');
 const Json2csvParser = require('json2csv').Parser;
+const endOfLine = require('os').EOL;
 
 const client = amazon.createClient({
   awsId: config.awsId,
@@ -32,6 +35,9 @@ async function getChildren(browseNodeId, browseNodeName) {
       }
     })
 
+    // write to output file
+    await appendCsvFile(children);
+
     let results = children.slice(0);
     for (let child of children) {
       if (child.BrowseNodeId) {
@@ -55,13 +61,22 @@ async function getChildren(browseNodeId, browseNodeName) {
   }
 }
 
-async function main() {
-  let results = await getChildren(549726);
+async function appendCsvFile(results) {
   let firstRow = get(results, '[0]', []);
   let fields = Object.keys(firstRow);
-  const json2csvParser = new Json2csvParser({ fields });
+  const json2csvParser = new Json2csvParser({ fields, header: false });
   const csv = json2csvParser.parse(results);
-  await writeFile('output-categories.csv', csv);
+  await appendFile(config.outputCategoriesFile, csv);
+}
+
+async function main() {
+  try {
+    await unlink(config.outputCategoriesFile);
+    await appendFile(config.outputCategoriesFile, `"BrowseNodeId","Name"${endOfLine}`);
+  } catch(e) {
+    // do nothing
+  }
+  let results = await getChildren(549726);
   console.log(results);
 }
 
