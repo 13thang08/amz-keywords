@@ -9,6 +9,7 @@ const unlink = promisify(fs.unlink);
 const retry = require('async-retry');
 const config = require('../config');
 const Json2csvParser = require('json2csv').Parser;
+const csv2json = require('csvtojson');
 const endOfLine = require('os').EOL;
 
 const client = amazon.createClient({
@@ -76,8 +77,11 @@ async function main() {
   } catch(e) {
     // do nothing
   }
-  let results = await getChildren(549726);
-  console.log(results);
+  let inputs = await csv2json().fromFile(config.inputCategoriesFile);
+  for (let row of inputs) {
+    let results = await getChildren(row.BrowseNodeId, row.Name);
+    console.log(results);
+  }
 }
 
 main();
