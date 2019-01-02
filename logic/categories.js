@@ -17,7 +17,13 @@ const client = amazon.createClient({
 async function getChildren(browseNodeId, browseNodeName) {
   try {
     console.log(`getting child categories from ${browseNodeId}-${browseNodeName} - START`);
-    let response = await client.browseNodeLookup({ browseNodeId });
+    let response = await retry(async (bail, count) => {
+      await sleep(config.amzApiInterval);
+      console.log(`getting child categories from ${browseNodeId}-${browseNodeName} - BROWSE NODE LOOKUP retry ${count}`);
+      return await client.browseNodeLookup({ browseNodeId });
+    }, {
+      retries: config.retries
+    })
     let childrenRaw = get(response, '[0].Children[0].BrowseNode', []);
     let children = childrenRaw.map(row => {
       return {
@@ -29,8 +35,13 @@ async function getChildren(browseNodeId, browseNodeName) {
     let results = children.slice(0);
     for (let child of children) {
       if (child.BrowseNodeId) {
-        await sleep(config.amzApiInterval);
-        let childResults = await getChildren(child.BrowseNodeId, child.Name);
+        let childResults = await retry(async (bail, count) => {
+          await sleep(config.amzApiInterval);
+          console.log(`getting child categories from ${browseNodeId}-${browseNodeName} - CHILD retry ${count}`);
+          return await getChildren(child.BrowseNodeId, child.Name);
+        }, {
+          retries: config.retries
+        });
         results = results.concat(childResults);
       }
     }
