@@ -63,6 +63,9 @@ async function getChildren(browseNodeId, browseNodeName) {
 }
 
 async function appendCsvFile(results) {
+  if (results.length === 0) {
+    return;
+  }
   let firstRow = get(results, '[0]', []);
   let fields = Object.keys(firstRow);
   const json2csvParser = new Json2csvParser({ fields, header: false });
