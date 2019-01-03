@@ -6,6 +6,7 @@
   "dependencies": {
     "amazon-product-api": "^0.4.4",
     "async-retry": "^1.2.3",
+    "axios": "^0.18.0",
     "csvtojson": "^2.0.8",
     "json2csv": "^4.3.2",
     "lodash.get": "^4.4.2",
